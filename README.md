@@ -14,7 +14,7 @@ Zero-dependencies Go package for Telegram Gateway API.
 ## Installation
 
 ```bash
-go get github.com/skewb1k/tg-gateway-go@v1.0.0
+go get github.com/skewb1k/tg-gateway-go
 ```
 
 ## Usage
