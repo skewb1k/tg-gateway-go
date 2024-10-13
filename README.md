@@ -1,6 +1,6 @@
 # Golang Telegram Gateway API
 
-Zero-dependencies Go package for Telegram Gateway API.
+Zero-dependencies Go package for [Telegram Gateway API](https://core.telegram.org/gateway).
 
 **Key features:**
 
@@ -11,7 +11,7 @@ Zero-dependencies Go package for Telegram Gateway API.
 - Immutable response structs.
 - No external dependencies.
 
-## Installation
+e# Installation
 
 ```bash
 go get github.com/skewb1k/tg-gateway-go
