@@ -11,7 +11,7 @@ Zero-dependencies Go package for [Telegram Gateway API](https://core.telegram.or
 - Immutable response structs.
 - No external dependencies.
 
-e# Installation
+## Installation
 
 ```bash
 go get github.com/skewb1k/tg-gateway-go
