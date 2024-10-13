@@ -93,4 +93,4 @@ func main() {
 
 No contributing guidelines yet.
 
-But you can always DM me on Telegram: [@skewb1k](https://t.me/skewb1k)
+But you can always DM me on Telegram: [@skewb1k_business](https://t.me/skewb1k_business)
