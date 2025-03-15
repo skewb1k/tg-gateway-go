@@ -1,0 +1,38 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.24.0
+      # - name: Cache golangci-lint
+      #   id: cache-golangci
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ~/.cache/golangci-lint
+      #     key: ${{ runner.os }}-golangci-lint-${{ hashFiles('go.sum') }}
+      - name: Install golangci-lint manually
+        if: steps.cache-golangci.outputs.cache-hit != 'true'
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.64.5
+      - name: Run golangci-lint
+        run: golangci-lint run
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 1.24.0
+      - name: Run tests
+        run: go test ./...

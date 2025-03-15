@@ -4,6 +4,7 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -20,13 +21,13 @@ func (c Client) VerifyReportIntegrity(r *http.Request) (bool, error) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return false, fmt.Errorf("could not read post body: %v", err)
+		return false, fmt.Errorf("could not read post body: %w", err)
 	}
 	defer r.Body.Close()
 
 	dataCheckString := fmt.Sprintf("%s\n%s", timestamp, string(body))
 
-	apiTokenHash := sha256.Sum256([]byte(c.token))
+	apiTokenHash := sha256.Sum256([]byte(c.apiToken))
 
 	mac := hmac.New(sha256.New, apiTokenHash[:])
 	mac.Write([]byte(dataCheckString))
@@ -36,5 +37,5 @@ func (c Client) VerifyReportIntegrity(r *http.Request) (bool, error) {
 		return true, nil
 	}
 
-	return false, fmt.Errorf("signature mismatch")
+	return false, errors.New("signature mismatch")
 }

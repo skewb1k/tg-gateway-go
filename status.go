@@ -2,24 +2,25 @@ package tggateway
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
 const (
 	CODE_VALID                 string = "code_valid"
-	CODE_INVALID                      = "code_invalid"
-	CODE_MAX_ATTEMPTS_EXCEEDED        = "code_max_attempts_exceeded"
-	CODE_EXPIRED                      = "expired"
-	MESSAGE_SENT                      = "sent"
-	MESSAGE_READ                      = "read"
-	MESSAGE_REVOKED                   = "revoked"
+	CODE_INVALID               string = "code_invalid"
+	CODE_MAX_ATTEMPTS_EXCEEDED string = "code_max_attempts_exceeded"
+	CODE_EXPIRED               string = "expired"
+	MESSAGE_SENT               string = "sent"
+	MESSAGE_READ               string = "read"
+	MESSAGE_REVOKED            string = "revoked"
 )
 
-type requestStatusJson struct {
-	RequestId        string   `json:"request_id"`
+type requestStatusJSON struct {
+	RequestID        string   `json:"request_id"`
 	PhoneNumber      string   `json:"phone_number"`
-	RequestCost      float32  `json:"request_cost"`
-	RemainingBalance *float32 `json:"remaining_balance"`
+	RequestCost      float64  `json:"request_cost"`
+	RemainingBalance *float64 `json:"remaining_balance"`
 	DeliveryStatus   *struct {
 		Status    string `json:"status"`
 		UpdatedAt int    `json:"updated_at"`
@@ -44,73 +45,73 @@ type verificationStatus struct {
 }
 
 type RequestStatus struct {
-	rawJson            []byte
-	requestId          string
+	rawJSON            []byte
+	requestID          string
 	phoneNumber        string
-	requestCost        float32
-	remainingBalance   *float32
+	requestCost        float64
+	remainingBalance   *float64
 	deliveryStatus     *deliveryStatus
 	verificationStatus *verificationStatus
 	payload            *string
 }
 
 func (r *RequestStatus) UnmarshalJSON(data []byte) error {
-	var requestStatusJson requestStatusJson
-	if err := json.Unmarshal(data, &requestStatusJson); err != nil {
-		return err
+	var req requestStatusJSON
+	if err := json.Unmarshal(data, &req); err != nil {
+		return fmt.Errorf("failed to unmarshal: %w", err)
 	}
 
-	r.rawJson = data
+	r.rawJSON = data
 
-	r.requestId = requestStatusJson.RequestId
-	r.phoneNumber = requestStatusJson.PhoneNumber
-	r.requestCost = requestStatusJson.RequestCost
-	r.remainingBalance = requestStatusJson.RemainingBalance
-	if requestStatusJson.DeliveryStatus != nil {
+	r.requestID = req.RequestID
+	r.phoneNumber = req.PhoneNumber
+	r.requestCost = req.RequestCost
+	r.remainingBalance = req.RemainingBalance
+	if req.DeliveryStatus != nil {
 		r.deliveryStatus = &deliveryStatus{
-			status:    requestStatusJson.DeliveryStatus.Status,
-			updatedAt: requestStatusJson.DeliveryStatus.UpdatedAt,
+			status:    req.DeliveryStatus.Status,
+			updatedAt: req.DeliveryStatus.UpdatedAt,
 		}
 	}
-	if requestStatusJson.VerificationStatus != nil {
+	if req.VerificationStatus != nil {
 		r.verificationStatus = &verificationStatus{
-			status:      requestStatusJson.VerificationStatus.Status,
-			updatedAt:   requestStatusJson.VerificationStatus.UpdatedAt,
-			codeEntered: requestStatusJson.VerificationStatus.CodeEntered,
+			status:      req.VerificationStatus.Status,
+			updatedAt:   req.VerificationStatus.UpdatedAt,
+			codeEntered: req.VerificationStatus.CodeEntered,
 		}
 	}
-	r.payload = requestStatusJson.Payload
+	r.payload = req.Payload
 
 	return nil
 }
 
 // Raw JSON data returned by the API.
-func (r RequestStatus) RawJson() []byte {
-	return r.rawJson
+func (r *RequestStatus) RawJSON() []byte {
+	return r.rawJSON
 }
 
 // Unique identifier of the verification request.
-func (r RequestStatus) RequestId() string {
-	return r.requestId
+func (r *RequestStatus) RequestID() string {
+	return r.requestID
 }
 
 // The phone number to which the verification code was sent, in the E.164 format.
-func (r RequestStatus) PhoneNumber() string {
+func (r *RequestStatus) PhoneNumber() string {
 	return r.phoneNumber
 }
 
 // Total request cost incurred by either checkSendAbility or sendVerificationMessage.
-func (r RequestStatus) RequestCost() float32 {
+func (r *RequestStatus) RequestCost() float64 {
 	return r.requestCost
 }
 
 // Remaining balance in credits. Returned only in response to a request that incurs a charge.
-func (r RequestStatus) RemainingBalance() *float32 {
+func (r *RequestStatus) RemainingBalance() *float64 {
 	return r.remainingBalance
 }
 
 // The current status of the message.
-func (r RequestStatus) DeliveryStatus() *string {
+func (r *RequestStatus) DeliveryStatus() *string {
 	if r.deliveryStatus != nil {
 		return &r.deliveryStatus.status
 	}
@@ -118,7 +119,7 @@ func (r RequestStatus) DeliveryStatus() *string {
 }
 
 // The timestamp when the status was last updated.
-func (r RequestStatus) DeliveryUpdatedAt() *int {
+func (r *RequestStatus) DeliveryUpdatedAt() *int {
 	if r.deliveryStatus != nil {
 		return &r.deliveryStatus.updatedAt
 	}
@@ -126,7 +127,7 @@ func (r RequestStatus) DeliveryUpdatedAt() *int {
 }
 
 // Delivery status updated at in UTC format.
-func (r RequestStatus) DeliveryUpdatedAtUTC() *time.Time {
+func (r *RequestStatus) DeliveryUpdatedAtUTC() *time.Time {
 	if r.deliveryStatus != nil {
 		t := unixToTime(r.deliveryStatus.updatedAt)
 		return &t
@@ -135,22 +136,22 @@ func (r RequestStatus) DeliveryUpdatedAtUTC() *time.Time {
 }
 
 // True if the message has been sent to the recipient's device(s).
-func (r RequestStatus) IsMessageSent() bool {
+func (r *RequestStatus) IsMessageSent() bool {
 	return r.deliveryStatus != nil && r.deliveryStatus.status == MESSAGE_SENT
 }
 
 // True if the message has been read by the recipient.
-func (r RequestStatus) IsMessageRead() bool {
+func (r *RequestStatus) IsMessageRead() bool {
 	return r.deliveryStatus != nil && r.deliveryStatus.status == MESSAGE_READ
 }
 
 // True if the message has been revoked.
-func (r RequestStatus) IsMessageRevoked() bool {
+func (r *RequestStatus) IsMessageRevoked() bool {
 	return r.deliveryStatus != nil && r.deliveryStatus.status == MESSAGE_REVOKED
 }
 
 // The current status of the verification process.
-func (r RequestStatus) VerificationStatus() *string {
+func (r *RequestStatus) VerificationStatus() *string {
 	if r.verificationStatus != nil {
 		return &r.verificationStatus.status
 	}
@@ -158,7 +159,7 @@ func (r RequestStatus) VerificationStatus() *string {
 }
 
 // The timestamp for this particular status. Represents the time when the status was last updated.
-func (r RequestStatus) VerificationUpdatedAt() *int {
+func (r *RequestStatus) VerificationUpdatedAt() *int {
 	if r.verificationStatus != nil {
 		return &r.verificationStatus.updatedAt
 	}
@@ -166,7 +167,7 @@ func (r RequestStatus) VerificationUpdatedAt() *int {
 }
 
 // Verification status updated at in UTC format.
-func (r RequestStatus) VerificationUpdatedAtUTC() *time.Time {
+func (r *RequestStatus) VerificationUpdatedAtUTC() *time.Time {
 	if r.verificationStatus != nil {
 		t := unixToTime(r.verificationStatus.updatedAt)
 		return &t
@@ -175,7 +176,7 @@ func (r RequestStatus) VerificationUpdatedAtUTC() *time.Time {
 }
 
 // The code entered by the user.
-func (r RequestStatus) VerificationCodeEntered() *string {
+func (r *RequestStatus) VerificationCodeEntered() *string {
 	if r.verificationStatus != nil {
 		return r.verificationStatus.codeEntered
 	}
@@ -183,26 +184,26 @@ func (r RequestStatus) VerificationCodeEntered() *string {
 }
 
 // True if the code entered by the user is correct.
-func (r RequestStatus) IsCodeValid() bool {
+func (r *RequestStatus) IsCodeValid() bool {
 	return r.verificationStatus != nil && r.verificationStatus.status == CODE_VALID
 }
 
 // True if the code entered by the user is incorrect.
-func (r RequestStatus) IsCodeInvalid() bool {
+func (r *RequestStatus) IsCodeInvalid() bool {
 	return r.verificationStatus != nil && r.verificationStatus.status == CODE_INVALID
 }
 
 // True if the maximum number of attempts to enter the code has been exceeded.
-func (r RequestStatus) IsCodeMaxAttemptsExceeded() bool {
+func (r *RequestStatus) IsCodeMaxAttemptsExceeded() bool {
 	return r.verificationStatus != nil && r.verificationStatus.status == CODE_MAX_ATTEMPTS_EXCEEDED
 }
 
 // True if the code has expired and can no longer be used for verification.
-func (r RequestStatus) IsCodeExpired() bool {
+func (r *RequestStatus) IsCodeExpired() bool {
 	return r.verificationStatus != nil && r.verificationStatus.status == CODE_EXPIRED
 }
 
 // Custom payload if it was provided in the request, 0-256 bytes.
-func (r RequestStatus) Payload() *string {
+func (r *RequestStatus) Payload() *string {
 	return r.payload
 }

@@ -7,13 +7,12 @@ import (
 
 type RevokeVerificationMessageParams struct {
 	// The unique identifier of the request whose verification message you want to revoke.
-	RequestId string `json:"request_id"`
+	RequestID string `json:"request_id"`
 }
 
-// Use this method to revoke a verification message that was sent previously.
-// Returns True if the revocation request was received.
-// However, this does not guarantee that the message will be deleted.
-// For example, it will not be removed if the recipient has already read it.
+// Use this method to revoke a verification message that was sent previously. Returns True if the revocation request was
+// received. However, this does not guarantee that the message will be deleted. For example, if the message has already
+// been delivered or read, it will not be removed.
 func (c Client) RevokeVerificationMessage(ctx context.Context, params *RevokeVerificationMessageParams) (*bool, error) {
 	var result struct {
 		Ok    bool    `json:"ok"`

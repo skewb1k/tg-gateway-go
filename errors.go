@@ -15,14 +15,14 @@ var (
 	ErrPhoneNumberInvalid      = errors.New("PHONE_NUMBER_INVALID")
 	ErrPhoneNumberNotFound     = errors.New("PHONE_NUMBER_NOT_FOUND")
 	ErrPhoneNumberMismatch     = errors.New("PHONE_NUMBER_MISMATCH")
-	ErrRequestIdInvalid        = errors.New("REQUEST_ID_INVALID")
-	ErrRequestIdRequired       = errors.New("REQUEST_ID_REQUIRED")
+	ErrRequestIDInvalid        = errors.New("REQUEST_ID_INVALID")
+	ErrRequestIDRequired       = errors.New("REQUEST_ID_REQUIRED")
 	ErrPayloadInvalid          = errors.New("PAYLOAD_INVALID")
 	ErrSenderUsernameInvalid   = errors.New("SENDER_USERNAME_INVALID")
 	ErrSenderNotVerified       = errors.New("SENDER_NOT_VERIFIED")
 	ErrSenderNotOwned          = errors.New("SENDER_NOT_OWNED")
-	ErrCallbackUrlInvalid      = errors.New("CALLBACK_URL_INVALID")
-	ErrTtlInvalid              = errors.New("TTL_INVALID")
+	ErrCallbackURLInvalid      = errors.New("CALLBACK_URL_INVALID")
+	ErrTTLInvalid              = errors.New("TTL_INVALID")
 	ErrAccessTokenInvalid      = errors.New("ACCESS_TOKEN_INVALID")
 	ErrAccessTokenRequired     = errors.New("ACCESS_TOKEN_REQUIRED")
 	ErrMessageAlreadySent      = errors.New("MESSAGE_ALREADY_SENT")
@@ -41,14 +41,14 @@ var errorsMap = map[string]error{
 	"PHONE_NUMBER_INVALID":       ErrPhoneNumberInvalid,
 	"PHONE_NUMBER_NOT_FOUND":     ErrPhoneNumberNotFound,
 	"PHONE_NUMBER_MISMATCH":      ErrPhoneNumberMismatch,
-	"REQUEST_ID_INVALID":         ErrRequestIdInvalid,
-	"REQUEST_ID_REQUIRED":        ErrRequestIdRequired,
+	"REQUEST_ID_INVALID":         ErrRequestIDInvalid,
+	"REQUEST_ID_REQUIRED":        ErrRequestIDRequired,
 	"PAYLOAD_INVALID":            ErrPayloadInvalid,
 	"SENDER_USERNAME_INVALID":    ErrSenderUsernameInvalid,
 	"SENDER_NOT_VERIFIED":        ErrSenderNotVerified,
 	"SENDER_NOT_OWNED":           ErrSenderNotOwned,
-	"CALLBACK_URL_INVALID":       ErrCallbackUrlInvalid,
-	"TTL_INVALID":                ErrTtlInvalid,
+	"CALLBACK_URL_INVALID":       ErrCallbackURLInvalid,
+	"TTL_INVALID":                ErrTTLInvalid,
 	"ACCESS_TOKEN_INVALID":       ErrAccessTokenInvalid,
 	"ACCESS_TOKEN_REQUIRED":      ErrAccessTokenRequired,
 	"MESSAGE_ALREADY_SENT":       ErrMessageAlreadySent,

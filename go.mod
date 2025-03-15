@@ -1,3 +1,3 @@
 module github.com/skewb1k/tg-gateway-go
 
-go 1.23.2
+go 1.24.0
