@@ -27,6 +27,10 @@ type DeliveryStatus struct {
 
 type VerificationStatusEnum string
 
+func (vs VerificationStatusEnum) IsValid() bool {
+	return vs == VerificationStatusValid
+}
+
 const (
 	VerificationStatusValid               VerificationStatusEnum = "code_valid"
 	VerificationStatusInvalid             VerificationStatusEnum = "code_invalid"

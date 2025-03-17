@@ -1,15 +1,16 @@
-# Golang Telegram Gateway API
+# Telegram Gateway API Client for Go
 
-Zero-dependencies Go package for [Telegram Gateway API](https://core.telegram.org/gateway).
+This Go package provides a full-featured client for interacting with the [Telegram Gateway API](https://core.telegram.org/gateway).
 
 **Key features:**
 
-- Full support of Telegram Gateway API.
-- 100% documented.
-- Context support.
-- Type-safe error handling.
-- Immutable response structs.
-- No external dependencies.
+- Full support of Telegram Gateway API
+- Simple API
+- 100% documented
+- Context package support
+- Type-safe error handling
+- No external dependencies
+
 
 ## Installation
 
@@ -19,7 +20,7 @@ go get github.com/skewb1k/tg-gateway-go
 
 ## Usage
 
-Basic example:
+Basic example of sending and verifying code:
 
 ```go
 package main
@@ -27,14 +28,14 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
+	"os"
 
 	tggateway "github.com/skewb1k/tg-gateway-go"
 )
 
 func main() {
-	token := "XXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+	token := os.Getenv("TGGW_API_TOKEN")
 
 	client := tggateway.NewClient(token)
 
@@ -43,52 +44,54 @@ func main() {
 	sendVerificationMessageResp, err := client.SendVerificationMessage(ctx, &tggateway.SendVerificationMessageParams{
 		PhoneNumber: "11111111111",
 		CodeLength:  4,
-		// or set your generated code.
+		// or set your generated code
 		// Code: "1234",
 	})
 	if err != nil {
-		// check error type.
+		// check error type if necessary
 		if errors.Is(err, tggateway.ErrPhoneNumberInvalid) {
 			// ...handle error
-			log.Fatal("phone number is invalid")
 		}
 
-		log.Fatalf("send verification message error: %s", err.Error())
+		log.Fatalf("failed to send verification message: %s", err.Error())
 	}
 
-	// store recieved request id.
-	requestId := sendVerificationMessageResp.RequestId()
+	// store recieved request id
+	requestId := sendVerificationMessageResp.RequestID
 
 	// get code from some user input.
 	enteredCode := userInput.Code
 
 	checkVerificationStatusResp, err := client.CheckVerificationStatus(ctx, &tggateway.CheckVerificationStatusParams{
-		RequestId: requestId,
+		RequestID: requestId,
 		Code:      enteredCode,
 	})
 	if err != nil {
-		log.Fatalf("check verification status error: %s", err.Error())
+		log.Fatalf("failed to check verification status error: %s", err.Error())
 	}
 
-	switch *checkVerificationStatusResp.VerificationStatus() {
-	case tggateway.CODE_VALID:
-		fmt.Println("code is valid")
-	case tggateway.CODE_INVALID:
-		fmt.Println("code is invalid")
-	case tggateway.CODE_MAX_ATTEMPTS_EXCEEDED:
-		fmt.Println("code max attempts exceeded")
-	case tggateway.CODE_EXPIRED:
-		fmt.Println("code is expired")
+	if checkVerificationStatusResp.VerificationStatus.Status.IsValid() {
+		// ...grant user accesses
 	}
 }
 ```
 
-## Todo list
 
-- [ ] Add example for every method.
-- [ ] Add support for custom loggers.
-- [ ] Cover with tests.
+## Docs
+
+For detailed documentation, method signatures, and examples, visit the package page on [pkg.go.dev](https://pkg.go.dev/github.com/skewb1k/tg-gateway-go).
+
+
+## Supported go versions
+
+This library requires Go 1.18+.
+
 
 ## Contributing
 
-No contributing guidelines yet.
+Feel free to submit issues, fork the repository and send pull requests!
+
+
+## License
+
+This project is licensed under the MIT License.

@@ -21,7 +21,7 @@ func (c Client) VerifyReportIntegrity(r *http.Request) (bool, error) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		return false, fmt.Errorf("could not read post body: %w", err)
+		return false, fmt.Errorf("failed to read request body: %w", err)
 	}
 	defer r.Body.Close()
 
