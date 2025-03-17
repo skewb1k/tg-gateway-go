@@ -7,39 +7,36 @@ import (
 )
 
 var (
-	ErrCodeInvalid             = errors.New("CODE_INVALID")
-	ErrCodeExpired             = errors.New("CODE_EXPIRED")
-	ErrCodeLengthRequired      = errors.New("CODE_LENGTH_REQUIRED")
-	ErrCodeLengthInvalid       = errors.New("CODE_LENGTH_INVALID")
-	ErrCodeMaxAttemptsExceeded = errors.New("CODE_MAX_ATTEMPTS_EXCEEDED")
-	ErrPhoneNumberInvalid      = errors.New("PHONE_NUMBER_INVALID")
-	ErrPhoneNumberNotFound     = errors.New("PHONE_NUMBER_NOT_FOUND")
-	ErrPhoneNumberMismatch     = errors.New("PHONE_NUMBER_MISMATCH")
-	ErrRequestIDInvalid        = errors.New("REQUEST_ID_INVALID")
-	ErrRequestIDRequired       = errors.New("REQUEST_ID_REQUIRED")
-	ErrPayloadInvalid          = errors.New("PAYLOAD_INVALID")
-	ErrSenderUsernameInvalid   = errors.New("SENDER_USERNAME_INVALID")
-	ErrSenderNotVerified       = errors.New("SENDER_NOT_VERIFIED")
-	ErrSenderNotOwned          = errors.New("SENDER_NOT_OWNED")
-	ErrCallbackURLInvalid      = errors.New("CALLBACK_URL_INVALID")
-	ErrTTLInvalid              = errors.New("TTL_INVALID")
-	ErrAccessTokenInvalid      = errors.New("ACCESS_TOKEN_INVALID")
-	ErrAccessTokenRequired     = errors.New("ACCESS_TOKEN_REQUIRED")
-	ErrMessageAlreadySent      = errors.New("MESSAGE_ALREADY_SENT")
-	ErrBalanceNotEnough        = errors.New("BALANCE_NOT_ENOUGH")
-	ErrFloodWait               = errors.New("FLOOD_WAIT")
-	ErrUnknownMethod           = errors.New("UNKNOWN_METHOD")
-	ErrUnknown                 = errors.New("UNKNOWN_ERROR")
+	ErrCodeInvalid             = errors.New("code invalid")
+	ErrCodeExpired             = errors.New("code expired")
+	ErrCodeLengthRequired      = errors.New("code length required")
+	ErrCodeLengthInvalid       = errors.New("code length invalid")
+	ErrCodeMaxAttemptsExceeded = errors.New("code max attempts exceeded")
+	ErrPhoneNumberInvalid      = errors.New("phone number invalid")
+	ErrPhoneNumberMismatch     = errors.New("phone number mismatch")
+	ErrRequestIDInvalid        = errors.New("request id invalid")
+	ErrRequestIDRequired       = errors.New("request id required")
+	ErrPayloadInvalid          = errors.New("payload invalid")
+	ErrSenderUsernameInvalid   = errors.New("sender username invalid")
+	ErrSenderNotVerified       = errors.New("sender not verified")
+	ErrSenderNotOwned          = errors.New("sender not owned")
+	ErrCallbackURLInvalid      = errors.New("callback URL invalid")
+	ErrTTLInvalid              = errors.New("TTL invalid")
+	ErrAccessTokenInvalid      = errors.New("access token invalid")
+	ErrAccessTokenRequired     = errors.New("access token required")
+	ErrMessageAlreadySent      = errors.New("message already sent")
+	ErrBalanceNotEnough        = errors.New("balance not enough")
+	ErrFloodWait               = errors.New("flood wait")
+	ErrUnknownMethod           = errors.New("unknown method")
 )
 
-var errorsMap = map[string]error{
+var apiErrors = map[string]error{
 	"CODE_INVALID":               ErrCodeInvalid,
 	"CODE_EXPIRED":               ErrCodeExpired,
 	"CODE_LENGTH_REQUIRED":       ErrCodeLengthRequired,
 	"CODE_LENGTH_INVALID":        ErrCodeLengthInvalid,
 	"CODE_MAX_ATTEMPTS_EXCEEDED": ErrCodeMaxAttemptsExceeded,
 	"PHONE_NUMBER_INVALID":       ErrPhoneNumberInvalid,
-	"PHONE_NUMBER_NOT_FOUND":     ErrPhoneNumberNotFound,
 	"PHONE_NUMBER_MISMATCH":      ErrPhoneNumberMismatch,
 	"REQUEST_ID_INVALID":         ErrRequestIDInvalid,
 	"REQUEST_ID_REQUIRED":        ErrRequestIDRequired,
@@ -56,15 +53,14 @@ var errorsMap = map[string]error{
 	"UNKNOWN_METHOD":             ErrUnknownMethod,
 }
 
-func (c Client) mapErr(errVal string) error {
-	if strings.Contains(errVal, "FLOOD_WAIT") {
+func (c Client) strToAPIError(msg string) error {
+	if strings.Contains(msg, "FLOOD_WAIT") {
 		return ErrFloodWait
 	}
 
-	if err, found := errorsMap[errVal]; found {
+	if err, found := apiErrors[msg]; found {
 		return err
 	}
 
-	fmt.Printf("unknown error:%s\n", errVal)
-	return ErrUnknown
+	return fmt.Errorf("unknown error: %s", msg)
 }

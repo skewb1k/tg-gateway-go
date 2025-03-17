@@ -2,6 +2,7 @@ package tggateway
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
@@ -30,7 +31,7 @@ type SendVerificationMessageParams struct {
 	// Time-to-live (in seconds) before the message expires and is deleted.
 	// The message will not be deleted if it has already been read.
 	// If not specified, the message will not be deleted.
-	// Supported values are from 60 to 86400.
+	// Supported values are from 30 to 3600.
 	TTL int `json:"ttl,omitempty"`
 }
 
@@ -39,21 +40,20 @@ type SendVerificationMessageParams struct {
 func (c Client) SendVerificationMessage(
 	ctx context.Context,
 	params *SendVerificationMessageParams,
-) (*RequestStatus, error) {
-	var resp struct {
-		Ok     bool           `json:"ok"`
-		Error  *string        `json:"error"`
-		Result *RequestStatus `json:"result"`
+) (RequestStatus, error) {
+	if params == nil {
+		panic("param must be not nil")
 	}
 
-	err := c.makeAPIRequest(ctx, "sendVerificationMessage", params, &resp)
+	var result RequestStatus
+	resultBytes, err := c.makeAPIRequest(ctx, "sendVerificationMessage", params, &result)
 	if err != nil {
-		return nil, err
+		return RequestStatus{}, err
 	}
 
-	if resp.Error != nil {
-		return nil, fmt.Errorf("send verification message failed: %w", c.mapErr(*resp.Error))
+	if err := json.Unmarshal(resultBytes, &result); err != nil {
+		return RequestStatus{}, fmt.Errorf("failed to unmarshal result: %w", err)
 	}
 
-	return resp.Result, nil
+	return result, nil
 }

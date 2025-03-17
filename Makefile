@@ -11,4 +11,4 @@ lint:
 
 .PHONY: test
 test:
-	@gotestsum -f testdox
+	@[ -f .env ] && export $$(grep -v '^#' .env | xargs) && go test -v ./...

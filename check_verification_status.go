@@ -2,6 +2,7 @@ package tggateway
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
@@ -20,21 +21,20 @@ type CheckVerificationStatusParams struct {
 func (c Client) CheckVerificationStatus(
 	ctx context.Context,
 	params *CheckVerificationStatusParams,
-) (*RequestStatus, error) {
-	var resp struct {
-		Ok     bool           `json:"ok"`
-		Error  *string        `json:"error"`
-		Result *RequestStatus `json:"result"`
+) (RequestStatus, error) {
+	if params == nil {
+		panic("param must be not nil")
 	}
 
-	err := c.makeAPIRequest(ctx, "checkVerificationStatus", params, &resp)
+	var result RequestStatus
+	resultBytes, err := c.makeAPIRequest(ctx, "checkVerificationStatus", params, &result)
 	if err != nil {
-		return nil, err
+		return RequestStatus{}, err
 	}
 
-	if resp.Error != nil {
-		return nil, fmt.Errorf("send verification message failed: %w", c.mapErr(*resp.Error))
+	if err := json.Unmarshal(resultBytes, &result); err != nil {
+		return RequestStatus{}, fmt.Errorf("failed to unmarshal result: %w", err)
 	}
 
-	return resp.Result, nil
+	return result, nil
 }

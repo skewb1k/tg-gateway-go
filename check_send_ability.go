@@ -2,6 +2,8 @@ package tggateway
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 )
 
 type CheckSendAbilityParams struct {
@@ -17,21 +19,20 @@ type CheckSendAbilityParams struct {
 // request_id will be free of charge, while repeated calls will result in an error. Conversely, calls that don't include
 // a request_id will spawn new requests and incur the respective fees accordingly. Note that this method is always free
 // of charge when used to send codes to your own phone number.
-func (c Client) CheckSendAbility(ctx context.Context, params *CheckSendAbilityParams) (*RequestStatus, error) {
-	var resp struct {
-		Ok     bool           `json:"ok"`
-		Error  *string        `json:"error"`
-		Result *RequestStatus `json:"result"`
+func (c Client) CheckSendAbility(ctx context.Context, params *CheckSendAbilityParams) (RequestStatus, error) {
+	if params == nil {
+		panic("params cannot be nil")
 	}
 
-	err := c.makeAPIRequest(ctx, "checkSendAbility", params, &resp)
+	var result RequestStatus
+	resultBytes, err := c.makeAPIRequest(ctx, "checkSendAbility", params, &result)
 	if err != nil {
-		return nil, err
+		return RequestStatus{}, err
 	}
 
-	if resp.Error != nil {
-		return nil, c.mapErr(*resp.Error)
+	if err := json.Unmarshal(resultBytes, &result); err != nil {
+		return RequestStatus{}, fmt.Errorf("failed to unmarshal result: %w", err)
 	}
 
-	return resp.Result, nil
+	return result, nil
 }
