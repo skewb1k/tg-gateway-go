@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	tggateway "github.com/skewb1k/tg-gateway-go"
+	tggateway "github.com/skewb1k/tg-gateway-go/v2"
 )
 
 func TestSendVerificationMessage(t *testing.T) {
