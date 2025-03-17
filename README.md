@@ -15,7 +15,7 @@ This Go package provides a full-featured client for interacting with the [Telegr
 ## Installation
 
 ```bash
-go get github.com/skewb1k/tg-gateway-go
+go get github.com/skewb1k/tg-gateway-go/v2
 ```
 
 ## Usage
@@ -31,7 +31,7 @@ import (
 	"log"
 	"os"
 
-	tggateway "github.com/skewb1k/tg-gateway-go"
+	tggateway "github.com/skewb1k/tg-gateway-go/v2"
 )
 
 func main() {
@@ -84,7 +84,7 @@ For detailed documentation, method signatures, and examples, visit the package p
 
 ## Supported go versions
 
-This library requires Go 1.18+.
+This library requires Go 1.24+.
 
 
 ## Contributing
